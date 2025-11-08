@@ -1,4 +1,3 @@
--- Create messages table
 CREATE TABLE IF NOT EXISTS messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     phone_number VARCHAR(20) NOT NULL,
@@ -12,21 +11,16 @@ CREATE TABLE IF NOT EXISTS messages (
     error_code VARCHAR(50),
     webhook_message_id VARCHAR(255),
     webhook_response TEXT,
-    version INT NOT NULL DEFAULT 1,
+    version BIGINT NOT NULL DEFAULT 0,
     CONSTRAINT chk_status CHECK (status IN ('pending', 'processing', 'sent', 'failed'))
 );
 
--- Create indexes for efficient querying
 CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 CREATE INDEX IF NOT EXISTS idx_messages_sent_at ON messages(sent_at) WHERE sent_at IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_messages_status_created_at ON messages(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_pending_fifo ON messages(created_at) WHERE status = 'pending';
 
--- Create index for pending messages query optimization (FIFO with SKIP LOCKED)
-CREATE INDEX IF NOT EXISTS idx_messages_pending_fifo ON messages(created_at)
-    WHERE status = 'pending';
-
--- Comments for documentation
 COMMENT ON TABLE messages IS 'Stores all messages to be sent via webhook';
 COMMENT ON COLUMN messages.status IS 'Message status: pending, processing, sent, failed';
 COMMENT ON COLUMN messages.attempts IS 'Number of send attempts made';

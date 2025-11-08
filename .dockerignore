@@ -13,3 +13,4 @@ coverage.out
 coverage.html
 docs/swagger.json
 docs/swagger.yaml
+go.sum

@@ -11,11 +11,11 @@ import (
 )
 
 type HealthHandler struct {
-	db    *persistence.PostgresDB
+	db    *persistence.PostgresGormDB
 	redis *cache.RedisCache
 }
 
-func NewHealthHandler(db *persistence.PostgresDB, redis *cache.RedisCache) *HealthHandler {
+func NewHealthHandler(db *persistence.PostgresGormDB, redis *cache.RedisCache) *HealthHandler {
 	return &HealthHandler{
 		db:    db,
 		redis: redis,

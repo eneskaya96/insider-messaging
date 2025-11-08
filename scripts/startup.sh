@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -13,14 +13,12 @@ done
 
 echo "PostgreSQL is up - executing migrations"
 
-# Run migrations
-go run cmd/migrate/main.go
+# Run migrations using golang-migrate CLI
+./migrate-tool -cmd up -path migrations
 
-# Optionally run seed if flag is set
-if [ "$RUN_SEED" = "true" ]; then
-  echo "Running database seed..."
-  go run cmd/seed/main.go
-fi
+# Run seed data automatically on first startup
+echo "Seeding database with test data..."
+./seed-tool || echo "Seed failed or already exists (this is normal on restart)"
 
 # Start the application
 echo "Starting application..."

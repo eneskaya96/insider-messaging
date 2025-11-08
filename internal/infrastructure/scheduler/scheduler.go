@@ -32,13 +32,13 @@ type Scheduler struct {
 func NewScheduler(
 	messageService service.MessageService,
 	batchSize int,
-	intervalMinutes int,
+	intervalSeconds int,
 	workerCount int,
 ) *Scheduler {
 	return &Scheduler{
 		messageService: messageService,
 		batchSize:      batchSize,
-		interval:       time.Duration(intervalMinutes) * time.Minute,
+		interval:       time.Duration(intervalSeconds) * time.Second,
 		workerCount:    workerCount,
 		stopChan:       make(chan struct{}),
 		stoppedChan:    make(chan struct{}),

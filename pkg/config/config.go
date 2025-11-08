@@ -45,7 +45,7 @@ type AppConfig struct {
 
 type MessageConfig struct {
 	BatchSize       int
-	IntervalMinutes int
+	IntervalSeconds int
 	MaxRetries      int
 	CharLimit       int
 	WorkerCount     int
@@ -91,7 +91,7 @@ func Load() (*Config, error) {
 		},
 		Message: MessageConfig{
 			BatchSize:       getEnvAsInt("MESSAGE_BATCH_SIZE", 2),
-			IntervalMinutes: getEnvAsInt("MESSAGE_INTERVAL_MINUTES", 2),
+			IntervalSeconds: getEnvAsInt("MESSAGE_INTERVAL_SECONDS", 10),
 			MaxRetries:      getEnvAsInt("MESSAGE_MAX_RETRIES", 3),
 			CharLimit:       getEnvAsInt("MESSAGE_CHAR_LIMIT", 160),
 			WorkerCount:     getEnvAsInt("MESSAGE_WORKER_COUNT", 5),
@@ -134,8 +134,8 @@ func (c *Config) validate() error {
 	if c.Message.BatchSize < 1 {
 		return fmt.Errorf("MESSAGE_BATCH_SIZE must be at least 1")
 	}
-	if c.Message.IntervalMinutes < 1 {
-		return fmt.Errorf("MESSAGE_INTERVAL_MINUTES must be at least 1")
+	if c.Message.IntervalSeconds < 1 {
+		return fmt.Errorf("MESSAGE_INTERVAL_SECONDS must be at least 1")
 	}
 	if c.Message.CharLimit < 1 {
 		return fmt.Errorf("MESSAGE_CHAR_LIMIT must be at least 1")

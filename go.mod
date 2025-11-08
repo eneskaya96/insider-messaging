@@ -1,10 +1,11 @@
 module github.com/eneskaya/insider-messaging
 
-go 1.21
+go 1.23
 
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/swaggo/swag v1.16.3
@@ -13,6 +14,9 @@ require (
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/time v0.5.0
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.10
+	gorm.io/plugin/optimisticlock v1.1.3
 )
 
 require (

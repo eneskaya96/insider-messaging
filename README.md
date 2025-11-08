@@ -5,15 +5,18 @@ An automatic message sending system built with Go that processes and sends messa
 ## Features
 
 - **Custom Scheduler**: Native Go implementation using goroutines and channels (no cron packages)
+- **GORM ORM**: Type-safe database operations with clean architecture
+- **Professional Migrations**: golang-migrate/migrate for version control and rollbacks
 - **Batch Processing**: Processes messages in configurable batch sizes with worker pool pattern
 - **FIFO Queue**: Messages processed in order of creation with database-level locking
 - **Atomic Operations**: Transaction-based processing with optimistic locking to prevent race conditions
+- **Hybrid Approach**: GORM for simple queries, raw SQL for critical operations (SKIP LOCKED)
 - **Redis Caching**: Caches successfully sent messages with metadata
 - **Rate Limiting**: Built-in rate limiting for webhook calls
-- **Error Handling**: Comprehensive error handling with retry logic and exponential backoff
+- **Error Handling**: Comprehensive error handling with retry logic
 - **Health Checks**: Liveness and readiness endpoints for container orchestration
 - **API Documentation**: Auto-generated Swagger/OpenAPI documentation
-- **Clean Architecture**: DDD principles with clear separation of concerns
+- **Clean Architecture**: DDD principles with clear separation of concerns (Domain independent from ORM)
 
 ## Architecture
 
@@ -31,7 +34,8 @@ An automatic message sending system built with Go that processes and sends messa
 │   │   ├── service/      # Use case implementations
 │   │   └── dto/          # Data transfer objects
 │   ├── infrastructure/   # External dependencies
-│   │   ├── persistence/  # PostgreSQL implementation
+│   │   ├── persistence/  # GORM + PostgreSQL implementation
+│   │   │   └── model/    # Database models (separate from domain)
 │   │   ├── cache/        # Redis implementation
 │   │   ├── http/         # HTTP client for webhooks
 │   │   └── scheduler/    # Custom message scheduler
@@ -166,7 +170,32 @@ The scheduler uses a **custom Go implementation** without any cron packages:
    - Caches to Redis on success
 5. Failed messages retry up to MAX_RETRIES
 
-## Database Schema
+## Database Schema & Migrations
+
+### GORM + golang-migrate Approach
+
+This project uses a **hybrid approach**:
+- **GORM**: For type-safe database operations and model definitions
+- **golang-migrate**: For professional migration version control
+- **Separate Models**: Infrastructure models are separate from domain entities (Clean Architecture)
+
+### Migration Management
+
+```bash
+# Run migrations up
+make migrate-up
+
+# Rollback last migration
+make migrate-down
+
+# Check current version
+make migrate-version
+
+# Create new migration
+make migrate-create
+```
+
+### Schema
 
 ```sql
 CREATE TABLE messages (
@@ -182,12 +211,35 @@ CREATE TABLE messages (
     error_code VARCHAR(50),
     webhook_message_id VARCHAR(255),
     webhook_response TEXT,
-    version INT DEFAULT 1
+    version BIGINT DEFAULT 0  -- Optimistic locking with GORM plugin
 );
 
 -- Indexes for FIFO and efficient querying
 CREATE INDEX idx_messages_pending_fifo ON messages(created_at)
     WHERE status = 'pending';
+```
+
+### Clean Architecture with GORM
+
+```go
+// Domain Entity (No GORM tags - Pure business logic)
+type Message struct {
+    id          uuid.UUID
+    phoneNumber *valueobject.PhoneNumber
+    // ... domain logic
+}
+
+// Infrastructure Model (GORM tags)
+type MessageModel struct {
+    ID          uuid.UUID `gorm:"primaryKey"`
+    PhoneNumber string    `gorm:"column:phone_number"`
+    Version     optimisticlock.Version
+    // ... GORM-specific tags
+}
+
+// Mapper converts between Domain and Infrastructure
+func ToEntity(model *MessageModel) *entity.Message
+func ToModel(entity *entity.Message) *MessageModel
 ```
 
 ## Development
@@ -199,7 +251,7 @@ CREATE INDEX idx_messages_pending_fifo ON messages(created_at)
 go mod download
 
 # Run migrations
-make migrate
+make migrate-up
 
 # Seed database
 make seed

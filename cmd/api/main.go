@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
+	_ "github.com/eneskaya/insider-messaging/docs"
 	"github.com/eneskaya/insider-messaging/internal/application/service"
 	"github.com/eneskaya/insider-messaging/internal/infrastructure/cache"
 	infrahttp "github.com/eneskaya/insider-messaging/internal/infrastructure/http"
@@ -59,7 +59,7 @@ func run() error {
 		zap.String("port", cfg.App.Port),
 	)
 
-	db, err := persistence.NewPostgresDB(&cfg.Database)
+	db, err := persistence.NewPostgresGormDB(&cfg.Database)
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -75,7 +75,7 @@ func run() error {
 
 	webhookClient := infrahttp.NewWebhookClient(&cfg.Webhook)
 
-	messageRepo := persistence.NewMessageRepositoryPostgres(db.DB(), cfg.Message.CharLimit)
+	messageRepo := persistence.NewMessageRepositoryGorm(db.DB(), cfg.Message.CharLimit)
 
 	messageService := service.NewMessageService(
 		messageRepo,
@@ -88,7 +88,7 @@ func run() error {
 	msgScheduler := scheduler.NewScheduler(
 		messageService,
 		cfg.Message.BatchSize,
-		cfg.Message.IntervalMinutes,
+		cfg.Message.IntervalSeconds,
 		cfg.Message.WorkerCount,
 	)
 

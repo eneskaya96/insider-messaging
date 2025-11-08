@@ -6,7 +6,6 @@ import (
 
 	"github.com/eneskaya/insider-messaging/internal/application/dto"
 	"github.com/eneskaya/insider-messaging/internal/application/service"
-	apperrors "github.com/eneskaya/insider-messaging/pkg/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
