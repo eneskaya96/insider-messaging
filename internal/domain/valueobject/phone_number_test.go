@@ -39,7 +39,12 @@ func TestNewPhoneNumber(t *testing.T) {
 		},
 		{
 			name:      "too short",
-			phone:     "+90",
+			phone:     "+9",
+			wantError: true,
+		},
+		{
+			name:      "too long",
+			phone:     "+123456789012345678",
 			wantError: true,
 		},
 	}
