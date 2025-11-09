@@ -25,8 +25,10 @@ func NewSchedulerHandler(scheduler *scheduler.Scheduler) *SchedulerHandler {
 // @Tags scheduler
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
 // @Router /api/v1/scheduler/start [post]
 func (h *SchedulerHandler) StartScheduler(c *gin.Context) {
 	if h.scheduler.IsRunning() {
@@ -54,8 +56,10 @@ func (h *SchedulerHandler) StartScheduler(c *gin.Context) {
 // @Tags scheduler
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} SuccessResponse
 // @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
 // @Router /api/v1/scheduler/stop [post]
 func (h *SchedulerHandler) StopScheduler(c *gin.Context) {
 	if !h.scheduler.IsRunning() {
@@ -81,7 +85,9 @@ func (h *SchedulerHandler) StopScheduler(c *gin.Context) {
 // @Tags scheduler
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} dto.SchedulerStatusResponse
+// @Failure 401 {object} ErrorResponse
 // @Router /api/v1/scheduler/status [get]
 func (h *SchedulerHandler) GetSchedulerStatus(c *gin.Context) {
 	lastRunAt, processed, successful, failed := h.scheduler.GetStats()

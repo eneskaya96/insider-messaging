@@ -41,6 +41,7 @@ type AppConfig struct {
 	Env                     string
 	LogLevel                string
 	GracefulShutdownTimeout time.Duration
+	APIToken                string
 }
 
 type MessageConfig struct {
@@ -88,6 +89,7 @@ func Load() (*Config, error) {
 			Env:                     getEnv("APP_ENV", "development"),
 			LogLevel:                getEnv("LOG_LEVEL", "info"),
 			GracefulShutdownTimeout: getEnvAsDuration("GRACEFUL_SHUTDOWN_TIMEOUT", 30*time.Second),
+			APIToken:                getEnv("API_TOKEN", ""),
 		},
 		Message: MessageConfig{
 			BatchSize:       getEnvAsInt("MESSAGE_BATCH_SIZE", 2),

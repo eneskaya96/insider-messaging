@@ -26,10 +26,12 @@ func NewMessageHandler(messageService service.MessageService) *MessageHandler {
 // @Tags messages
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(20)
 // @Success 200 {object} dto.MessageListResponse
 // @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/messages/sent [get]
 func (h *MessageHandler) GetSentMessages(c *gin.Context) {
@@ -51,9 +53,11 @@ func (h *MessageHandler) GetSentMessages(c *gin.Context) {
 // @Tags messages
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path string true "Message ID"
 // @Success 200 {object} dto.MessageResponse
 // @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/messages/{id} [get]
@@ -82,7 +86,9 @@ func (h *MessageHandler) GetMessage(c *gin.Context) {
 // @Tags messages
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} dto.MessageStatsResponse
+// @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/messages/stats [get]
 func (h *MessageHandler) GetStats(c *gin.Context) {
@@ -101,9 +107,11 @@ func (h *MessageHandler) GetStats(c *gin.Context) {
 // @Tags messages
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param message body dto.CreateMessageRequest true "Message details"
 // @Success 201 {object} dto.MessageResponse
 // @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/messages [post]
 func (h *MessageHandler) CreateMessage(c *gin.Context) {

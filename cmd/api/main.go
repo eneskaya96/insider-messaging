@@ -36,6 +36,11 @@ import (
 // @BasePath /
 // @schemes http https
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and your API token
+
 func main() {
 	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Application error: %v\n", err)
@@ -96,7 +101,7 @@ func run() error {
 	schedulerHandler := handler.NewSchedulerHandler(msgScheduler)
 	healthHandler := handler.NewHealthHandler(db, redisCache)
 
-	r := router.NewRouter(messageHandler, schedulerHandler, healthHandler)
+	r := router.NewRouter(messageHandler, schedulerHandler, healthHandler, cfg.App.APIToken)
 	engine := r.Setup()
 
 	srv := &http.Server{
