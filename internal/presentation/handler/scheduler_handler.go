@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/eneskaya/insider-messaging/internal/application/dto"
@@ -35,7 +36,9 @@ func (h *SchedulerHandler) StartScheduler(c *gin.Context) {
 		return
 	}
 
-	if err := h.scheduler.Start(c.Request.Context()); err != nil {
+	// Use background context instead of request context
+	// Request context gets cancelled when HTTP response is sent
+	if err := h.scheduler.Start(context.Background()); err != nil {
 		handleError(c, err)
 		return
 	}
