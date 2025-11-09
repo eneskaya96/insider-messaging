@@ -84,19 +84,10 @@ This command will:
 - Start Redis cache
 - Build and run the application
 - Run migrations automatically
+- Create 100 sample messages for testing
 - Start the scheduler
 
-### 4. Seed the database
-
-```bash
-# Inside the container
-docker-compose exec app ./main seed
-
-# Or locally
-make seed
-```
-
-### 5. Access the application
+### 4. Access the application
 
 - **API**: http://localhost:8080
 - **Swagger Documentation**: http://localhost:8080/swagger/index.html
@@ -219,28 +210,6 @@ CREATE INDEX idx_messages_pending_fifo ON messages(created_at)
     WHERE status = 'pending';
 ```
 
-### Clean Architecture with GORM
-
-```go
-// Domain Entity (No GORM tags - Pure business logic)
-type Message struct {
-    id          uuid.UUID
-    phoneNumber *valueobject.PhoneNumber
-    // ... domain logic
-}
-
-// Infrastructure Model (GORM tags)
-type MessageModel struct {
-    ID          uuid.UUID `gorm:"primaryKey"`
-    PhoneNumber string    `gorm:"column:phone_number"`
-    Version     optimisticlock.Version
-    // ... GORM-specific tags
-}
-
-// Mapper converts between Domain and Infrastructure
-func ToEntity(model *MessageModel) *entity.Message
-func ToModel(entity *entity.Message) *MessageModel
-```
 
 ## Development
 
@@ -252,9 +221,6 @@ go mod download
 
 # Run migrations
 make migrate-up
-
-# Seed database
-make seed
 
 # Run application
 make run
@@ -293,9 +259,6 @@ docker-compose up -d --build
 
 # Run migration inside container
 docker-compose exec app go run cmd/migrate/main.go
-
-# Run seed inside container
-docker-compose exec app go run cmd/seed/main.go
 ```
 
 ## Error Handling
